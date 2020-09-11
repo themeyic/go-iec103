@@ -1,0 +1,12 @@
+github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
+github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
+github.com/goburrow/serial v0.1.0 h1:v2T1SQa/dlUqQiYIT8+Cu7YolfqAi3K96UmhwYyuSrA=
+github.com/goburrow/serial v0.1.0/go.mod h1:sAiqG0nRVswsm1C97xsttiYCzSLBmUZ/VSlVLZJ8haA=
+github.com/shopspring/decimal v1.2.0 h1:abSATXmQEYyShuxI4/vyW3tV1MrKAJzCZ/0zLUXYbsQ=
+github.com/shopspring/decimal v1.2.0/go.mod h1:DKyhrW/HYNuLGql+MJL6WCR6knT2jwCFRcu2hWCYk4o=
+github.com/themeyic/timing v1.1.2 h1:QxJlh+KaL0OW+LXXij2Q3udCeVVERtP2y9M+5RoCuTc=
+github.com/themeyic/timing v1.1.2/go.mod h1:YspyGgaGbFOSpkLO0K48oDmYujwSLUoazYB3n2zn294=
+github.com/thinkgos/timing v1.1.2 h1:Gkpht/YViWFl/ADWy85VAQygaKcn8K8q/WLWcE5Rfag=
+github.com/thinkgos/timing v1.1.2/go.mod h1:zS1qzRn2ISTjI1xJc6AHNfWAvCtc7FylwWjt32L8qvo=
+github.com/x448/float16 v0.8.4 h1:qLwI1I70+NjRFUR3zs1JPUCgaCXSh3SW62uAKT1mSBM=
+github.com/x448/float16 v0.8.4/go.mod h1:14CWIYCyZA/cWjXOioeEpHeN/83MdbZDRQHoFcYsOfg=
