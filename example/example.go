@@ -26,8 +26,6 @@ func main() {
 		fmt.Println("start err,", err)
 		return
 	}
-	//MeterNumber是表号 005223440001
-	//DataMarker是数据标识别 02010300
 	test := &iec.Iec103ConfigClient{"01", 0, 1, "15", "2a", "fe", "f1", "09"}
 	if test.Initialize(client) == "Loading Finished !" {
 		test.SummonSecondaryData(client)
