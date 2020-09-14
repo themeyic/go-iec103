@@ -66,7 +66,7 @@ type Iec103ConfigClient struct {
 func (iec103 *Iec103ConfigClient) Initialize(iec Client) string {
 	/*
 	 This message is used for initialized(sent by the master station)-Reset the communication unit
-	      10  				  40             01           41             16
+	      10  		       40             01           41             16
 	 Start character	control domain  Link Address  Frame checksum  End character
 	*/
 	resetTheCommunicationUnit := StartCharacter10 + " 40 " + iec103.LinkAddress + " 41 " + Endcharacter
@@ -140,7 +140,7 @@ func (iec103 *Iec103ConfigClient) SummonSecondaryData(iec Client) string {
 	return ""
 }
 
-func (iec103 *Iec103ConfigClient) MasterStationReadsAnalogQuantity(iec Client, groupNum ...int) []float32 {
+func (iec103 *Iec103ConfigClient) MasterStationReadsAnalogQuantity(iec Client, groupNum []int) []float32 {
 	var backData []float32
 	masterStationReadsAnalogQuantitControlDomain := "01" + strconv.Itoa(iec103.FCB) + "10011"
 	if iec103.FCB == 0 {
