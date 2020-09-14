@@ -29,8 +29,9 @@ func main() {
 	test := &iec.Iec103ConfigClient{"01", 0, 1, "15", "2a", "fe", "f1", "09"}
 	if test.Initialize(client) == "Loading Finished !" {
 		test.SummonSecondaryData(client)
-		test1 := test.MasterStationReadsAnalogQuantity(client, 11, 37, 38)
-		fmt.Println(test1)
+		test1 := []int{1,2,3}
+		test2 :=  test.MasterStationReadsAnalogQuantity(client,test1)
+		fmt.Println(test2)
 	}
 
 }
