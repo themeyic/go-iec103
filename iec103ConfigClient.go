@@ -29,16 +29,17 @@ type Iec103ConfigClient struct {
 	   3 retransmissions, the current round of transmissions service will be terminated
 	*/
 	FCB int
-	/*
-	   FCV(Frame count valid bit)
-	   FCB = 0 indicates that the change of FCB is invalid, and FCB = 1 indicates that the change of FCB is invalid
-	   Send/no answer service,broadcast message does not consider message loss and repeated transmissions no need
-	   to change the FCB state, these frames FCV always 0
-	*/
 	FCV int
 	/*
-	   ACD(Access bit required)
-	   ACD = 1,notify the master station that the slave station has Class 1 data request transmission.
+		   FCV(Frame count valid bit)
+		   FCB = 0 indicates that the change of FCB is invalid, and FCB = 1 indicates that the change of FCB is invalid
+		   Send/no answer service,broadcast message does not consider message loss and repeated transmissions no need
+		   to change the FCB state, these frames FCV always 0
+		*
+		FCV int
+		/*
+		  ACD(Access bit required)
+		  ACD = 1,notify the master station that the slave station has Class 1 data request transmission.
 	*/
 	//ACD  int
 	/*
@@ -149,7 +150,8 @@ func (iec103 *Iec103ConfigClient) MasterStationReadsAnalogQuantity(iec Client, g
 		iec103.FCB = 0
 	}
 	masterStationReadsAnalogQuantitControlDomain = ConvertBinaryTo16Base(masterStationReadsAnalogQuantitControlDomain)
-	resetTheCommunicationUnit := StartCharacter68 + " 0b 0b " + StartCharacter68 + " " + masterStationReadsAnalogQuantitControlDomain + " " + iec103.LinkAddress + " " + iec103.TYP + " 81 " + iec103.COT + " 01 " + iec103.FUN + " " + iec103.INF + " 00 01 09 0e 16"
+	computedCode := CheckCode(masterStationReadsAnalogQuantitControlDomain + " " + iec103.LinkAddress + " " + iec103.TYP + " 81 " + iec103.COT + " 01 " + iec103.FUN + " " + iec103.INF + " 00 01 09")
+	resetTheCommunicationUnit := StartCharacter68 + " 0b 0b " + StartCharacter68 + " " + masterStationReadsAnalogQuantitControlDomain + " " + iec103.LinkAddress + " " + iec103.TYP + " 81 " + iec103.COT + " 01 " + iec103.FUN + " " + iec103.INF + " 00 01 09 "+computedCode+" 16"
 	slaveBackMessage, err := iec.SendRawFrame(resetTheCommunicationUnit)
 	judgmentBitsString := getControlArea(slaveBackMessage, err)
 	var markCount int
