@@ -127,7 +127,7 @@ func (iec *Iec103ClientProvider) SendRawFrame(request string) (response string, 
 	//bytesToRead := calculateResponseLength(HexStringToBytes(request))
 	//time.Sleep(iec.calculateDelay(len(HexStringToBytes(request)) + bytesToRead))
 
-	time.Sleep(time.Second * 1)
+	time.Sleep(time.Millisecond*10)
 
 	sum, _ := io.ReadFull(iec.port, data[:])
 	backData := fmt.Sprintf("[% x]", data[0:sum])
