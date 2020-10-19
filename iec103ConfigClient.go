@@ -149,7 +149,8 @@ func (iec103 *Iec103ConfigClient) MasterStationReadsAnalogQuantity(iec Client, g
 		iec103.FCB = 0
 	}
 	masterStationReadsAnalogQuantitControlDomain = ConvertBinaryTo16Base(masterStationReadsAnalogQuantitControlDomain)
-	resetTheCommunicationUnit := StartCharacter68 + " 0b 0b " + StartCharacter68 + " " + masterStationReadsAnalogQuantitControlDomain + " " + iec103.LinkAddress + " " + iec103.TYP + " 81 " + iec103.COT + " 01 " + iec103.FUN + " " + iec103.INF + " 00 01 09 0e 16"
+	computedCode := CheckCode(masterStationReadsAnalogQuantitControlDomain + " " + iec103.LinkAddress + " " + iec103.TYP + " 81 " + iec103.COT + " 01 " + iec103.FUN + " " + iec103.INF + " 00 01 09")
+	resetTheCommunicationUnit := StartCharacter68 + " 0b 0b " + StartCharacter68 + " " + masterStationReadsAnalogQuantitControlDomain + " " + iec103.LinkAddress + " " + iec103.TYP + " 81 " + iec103.COT + " 01 " + iec103.FUN + " " + iec103.INF + " 00 01 09 "+computedCode+" 16"
 	slaveBackMessage, err := iec.SendRawFrame(resetTheCommunicationUnit)
 	judgmentBitsString := getControlArea(slaveBackMessage, err)
 	//var markCount int
@@ -338,4 +339,3 @@ func CheckCode(data string) string {
 	}
 	return strings.ToLower(hex)
 }
-
