@@ -29,17 +29,16 @@ type Iec103ConfigClient struct {
 	   3 retransmissions, the current round of transmissions service will be terminated
 	*/
 	FCB int
+	/*
+	   FCV(Frame count valid bit)
+	   FCB = 0 indicates that the change of FCB is invalid, and FCB = 1 indicates that the change of FCB is invalid
+	   Send/no answer service,broadcast message does not consider message loss and repeated transmissions no need
+	   to change the FCB state, these frames FCV always 0
+	*/
 	FCV int
 	/*
-		   FCV(Frame count valid bit)
-		   FCB = 0 indicates that the change of FCB is invalid, and FCB = 1 indicates that the change of FCB is invalid
-		   Send/no answer service,broadcast message does not consider message loss and repeated transmissions no need
-		   to change the FCB state, these frames FCV always 0
-		*
-		FCV int
-		/*
-		  ACD(Access bit required)
-		  ACD = 1,notify the master station that the slave station has Class 1 data request transmission.
+	   ACD(Access bit required)
+	   ACD = 1,notify the master station that the slave station has Class 1 data request transmission.
 	*/
 	//ACD  int
 	/*
@@ -150,11 +149,10 @@ func (iec103 *Iec103ConfigClient) MasterStationReadsAnalogQuantity(iec Client, g
 		iec103.FCB = 0
 	}
 	masterStationReadsAnalogQuantitControlDomain = ConvertBinaryTo16Base(masterStationReadsAnalogQuantitControlDomain)
-	computedCode := CheckCode(masterStationReadsAnalogQuantitControlDomain + " " + iec103.LinkAddress + " " + iec103.TYP + " 81 " + iec103.COT + " 01 " + iec103.FUN + " " + iec103.INF + " 00 01 09")
-	resetTheCommunicationUnit := StartCharacter68 + " 0b 0b " + StartCharacter68 + " " + masterStationReadsAnalogQuantitControlDomain + " " + iec103.LinkAddress + " " + iec103.TYP + " 81 " + iec103.COT + " 01 " + iec103.FUN + " " + iec103.INF + " 00 01 09 "+computedCode+" 16"
+	resetTheCommunicationUnit := StartCharacter68 + " 0b 0b " + StartCharacter68 + " " + masterStationReadsAnalogQuantitControlDomain + " " + iec103.LinkAddress + " " + iec103.TYP + " 81 " + iec103.COT + " 01 " + iec103.FUN + " " + iec103.INF + " 00 01 09 0e 16"
 	slaveBackMessage, err := iec.SendRawFrame(resetTheCommunicationUnit)
 	judgmentBitsString := getControlArea(slaveBackMessage, err)
-	var markCount int
+	//var markCount int
 	if judgmentBitsString[2:3] == "1" && judgmentBitsString[3:4] == "0" {
 		controlDomain := "01" + strconv.Itoa(iec103.FCB) + strconv.Itoa(iec103.FCV) + "1010"
 		if iec103.FCB == 0 {
@@ -168,54 +166,55 @@ func (iec103 *Iec103ConfigClient) MasterStationReadsAnalogQuantity(iec Client, g
 			messageArray := strings.Split(slaveBackMessageSecond, " ")
 			messageArray = messageArray[14 : len(messageArray)-2]
 			for _, eachGroupNum := range groupNum {
-				if markCount = len(messageArray) / 10; eachGroupNum <= len(messageArray)/10 {
+				//if markCount = len(messageArray) / 10; eachGroupNum <= len(messageArray)/10 {
 					getValue := splitArray(messageArray)[eachGroupNum-1]
 					theValue := "0x" + getValue[len(getValue)-1] + getValue[len(getValue)-2] + getValue[len(getValue)-3] + getValue[len(getValue)-4]
 					realValue, _ := strconv.ParseUint(theValue, 0, 32)
 					finshedvalue := math.Float32frombits(uint32(realValue))
 					backData = append(backData, finshedvalue)
-				}
+				//}
 			}
-
-			judgeString := messageArray[4]
-			judgeString = getControlArea(slaveBackMessage, err)
-			for {
-				if judgeString[2:3] == "1" && judgeString[3:4] == "0" {
-					controlDomainFor := "01" + strconv.Itoa(iec103.FCB) + strconv.Itoa(iec103.FCV) + "1010"
-					if iec103.FCB == 0 {
-						iec103.FCB = 1
-					} else {
-						iec103.FCB = 0
-					}
-					controlDomainFor = ConvertBinaryTo16Base(controlDomainFor)
-					slaveBackMessageSecondFor, _ := iec.SendRawFrame(StartCharacter10 + controlDomainFor + iec103.LinkAddress + CheckCode(controlDomainFor+iec103.LinkAddress) + Endcharacter)
-					if slaveBackMessageSecondFor != "" {
-						if len(strings.Split(slaveBackMessageSecondFor, " ")) == 5 && getControlArea(slaveBackMessageSecondFor, err)[2:3] == "0" && getControlArea(slaveBackMessageSecondFor, err)[3:4] == "0" {
-							break
-						} else {
-							slaveBackMessageSecondFor := strings.Split(slaveBackMessageSecondFor, " ")
-							slaveBackMessageSecondFor = slaveBackMessageSecondFor[14 : len(slaveBackMessageSecondFor)-2]
-
-							for _, eachGroupNum := range groupNum {
-								if eachGroupNum > markCount && eachGroupNum <= markCount+len(slaveBackMessageSecondFor)/10 {
-									getValue := splitArray(slaveBackMessageSecondFor)[eachGroupNum-markCount-1]
-									theValue := "0x" + getValue[len(getValue)-1] + getValue[len(getValue)-2] + getValue[len(getValue)-3] + getValue[len(getValue)-4]
-									realValue, _ := strconv.ParseUint(theValue, 0, 32)
-									finshedvalue := math.Float32frombits(uint32(realValue))
-									backData = append(backData, finshedvalue)
-								}
-							}
-						}
-					}
-
-				} else if judgeString[2:3] == "0" {
-					fmt.Println("无所召唤的数据")
-					break
-				} else if judgeString[3:4] == "1" {
-					fmt.Println("子站数据已满不能再接受数据了!")
-					break
-				}
-			}
+			//fmt.Println(markCount)
+			//
+			//judgeString := messageArray[4]
+			//judgeString = getControlArea(slaveBackMessage, err)
+			//for {
+			//	if judgeString[2:3] == "1" && judgeString[3:4] == "0" {
+			//		controlDomainFor := "01" + strconv.Itoa(iec103.FCB) + strconv.Itoa(iec103.FCV) + "1010"
+			//		if iec103.FCB == 0 {
+			//			iec103.FCB = 1
+			//		} else {
+			//			iec103.FCB = 0
+			//		}
+			//		controlDomainFor = ConvertBinaryTo16Base(controlDomainFor)
+			//		slaveBackMessageSecondFor, _ := iec.SendRawFrame(StartCharacter10 + controlDomainFor + iec103.LinkAddress + CheckCode(controlDomainFor+iec103.LinkAddress) + Endcharacter)
+			//		if slaveBackMessageSecondFor != "" {
+			//			if len(strings.Split(slaveBackMessageSecondFor, " ")) == 5 && getControlArea(slaveBackMessageSecondFor, err)[2:3] == "0" && getControlArea(slaveBackMessageSecondFor, err)[3:4] == "0" {
+			//				break
+			//			} else {
+			//				slaveBackMessageSecondFor := strings.Split(slaveBackMessageSecondFor, " ")
+			//				slaveBackMessageSecondFor = slaveBackMessageSecondFor[14 : len(slaveBackMessageSecondFor)-2]
+			//
+			//				for _, eachGroupNum := range groupNum {
+			//					if eachGroupNum > markCount && eachGroupNum <= markCount+len(slaveBackMessageSecondFor)/10 {
+			//						getValue := splitArray(slaveBackMessageSecondFor)[eachGroupNum-markCount-1]
+			//						theValue := "0x" + getValue[len(getValue)-1] + getValue[len(getValue)-2] + getValue[len(getValue)-3] + getValue[len(getValue)-4]
+			//						realValue, _ := strconv.ParseUint(theValue, 0, 32)
+			//						finshedvalue := math.Float32frombits(uint32(realValue))
+			//						backData = append(backData, finshedvalue)
+			//					}
+			//				}
+			//			}
+			//		}
+			//
+			//	} else if judgeString[2:3] == "0" {
+			//		fmt.Println("无所召唤的数据")
+			//		break
+			//	} else if judgeString[3:4] == "1" {
+			//		fmt.Println("子站数据已满不能再接受数据了!")
+			//		break
+			//	}
+			//}
 
 		}
 	} else if judgmentBitsString[2:3] == "0" {
@@ -339,3 +338,4 @@ func CheckCode(data string) string {
 	}
 	return strings.ToLower(hex)
 }
+
