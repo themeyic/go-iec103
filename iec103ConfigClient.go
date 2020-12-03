@@ -111,6 +111,11 @@ func getControlArea(judgeString string, err error) string {
 }
 
 func (iec103 *Iec103ConfigClient) SummonSecondaryData(iec Client) string {
+	defer func(){
+		if r := recover();r != nil{
+			fmt.Println("panic",r)
+		}
+	}
 	summonSecondaryControlDomain := "01" + strconv.Itoa(iec103.FCB) + strconv.Itoa(iec103.FCV) + "1010"
 	if iec103.FCB == 0 {
 		iec103.FCB = 1
