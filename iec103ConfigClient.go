@@ -146,6 +146,11 @@ func (iec103 *Iec103ConfigClient) SummonSecondaryData(iec Client) string {
 }
 
 func (iec103 *Iec103ConfigClient) MasterStationReadsAnalogQuantity(iec Client, groupNum []int) []float32 {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("panic", r)
+		}
+	}()
 	var backData []float32
 	masterStationReadsAnalogQuantitControlDomain := "01" + strconv.Itoa(iec103.FCB) + "10011"
 	if iec103.FCB == 0 {
